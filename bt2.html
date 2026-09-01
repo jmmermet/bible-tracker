@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suivi de lecture de la Bible</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f7f7f9;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --accent: #2563eb;
+      --accent-weak: #dbeafe;
+      --border: #e5e7eb;
+      --success: #16a34a;
+      --overlay-bg: rgba(0,0,0,0.6);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0f14;
+        --card: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #60a5fa;
+        --accent-weak: #1e3a8a;
+        --border: #1f2937;
+        --success: #22c55e;
+      }
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.35;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 600;
+    }
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 140px;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+    .progress-text {
+      font-size: 0.7rem;
+      color: var(--muted);
+      min-width: 45px;
+      text-align: right;
+    }
+    .actions {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    #menuToggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.2rem;
+    }
+
+    /* Overlay "Livres" pleine largeur */
+    .books-overlay {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--overlay-bg);
+      z-index: 40;
+      display: none;
+      padding: 0.5rem;
+    }
+    .books-overlay.active {
+      display: block;
+    }
+    .books-panel {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 0.6rem;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .books-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0.6rem 0.4rem 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(2.8rem, 1fr));
+      gap: 0.4rem;
+    }
+    .book-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.4rem 0.2rem;
+      font-size: 0.75rem;
+      user-select: none;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--text);
+      text-align: center;
+    }
+    .book-btn:hover {
+      background: var(--accent-weak);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* Contenu principal */
+    main {
+      padding: 0.6rem;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Livres et chapitres */
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0.9rem 0 0.35rem;
+    }
+    .book {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem;
+      margin-bottom: 0.65rem;
+      scroll-margin-top: 60px;
+    }
+    .book-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    .book-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .book-progress {
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .chapters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
+      gap: 0.25rem;
+    }
+    .chapter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0;
+      font-size: 0.75rem;
+      user-select: none;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--text);
+      min-height: 1.8rem;
+    }
+    .chapter.checked {
+      background: var(--accent-weak);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Bouton Réinitialiser en bas */
+    .reset-section {
+      max-width: 900px;
+      margin: 1.2rem auto 2rem;
+      padding: 0 0.6rem;
+      text-align: center;
+    }
+    .reset-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Modal reset (3 étapes) */
+    .reset-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .reset-modal.active {
+      display: flex;
+    }
+    .reset-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      max-width: 340px;
+      width: 90%;
+    }
+    .reset-card h2 {
+      font-size: 0.95rem;
+      margin: 0 0 0.4rem;
+    }
+    .reset-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0 0 0.6rem;
+    }
+    .reset-actions {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+      <button id="menuToggle">Livres</button>
+      <h1>Suivi de lecture de la Bible</h1>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+    <div class="actions">
+      <!-- pas de bouton ici -->
+    </div>
+  </header>
+
+  <!-- Overlay "Livres" -->
+  <div class="books-overlay" id="booksOverlay">
+    <div class="books-panel">
+      <div id="booksPanelContent">
+        <!-- Rempli dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+  <main id="app">
+    <!-- Livres + chapitres -->
+  </main>
+
+  <!-- Bouton Réinitialiser en bas -->
+  <div class="reset-section">
+    <button class="reset-button" id="resetBtn">Réinitialiser</button>
+  </div>
+
+  <!-- Modal reset -->
+  <div class="reset-modal" id="resetModal">
+    <div class="reset-card">
+      <h2 id="resetTitle">Réinitialiser la progression ?</h2>
+      <p id="resetText">Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.</p>
+      <div class="reset-actions" id="resetActions1">
+        <button class="secondary" id="resetCancel1">Annuler</button>
+        <button id="resetNext1">Continuer</button>
+      </div>
+      <div class="reset-actions" id="resetActions2" style="display:none;">
+        <button class="secondary" id="resetCancel2">Retour</button>
+        <button id="resetConfirm2">Réinitialiser la progression</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Structure de la Bible avec abréviations
+    const bible
