@@ -14,7 +14,6 @@
       --accent-weak: #dbeafe;
       --border: #e5e7eb;
       --success: #16a34a;
-      --sidebar-bg: #f3f4f6;
       --overlay-bg: rgba(0,0,0,0.6);
     }
     @media (prefers-color-scheme: dark) {
@@ -27,7 +26,6 @@
         --accent-weak: #1e3a8a;
         --border: #1f2937;
         --success: #22c55e;
-        --sidebar-bg: #0f172a;
       }
     }
     html, body {
@@ -104,119 +102,62 @@
       color: var(--accent);
       border: 1px solid var(--accent);
     }
-    #menuToggle {
+    #menuToggle, #configToggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-width: 2.2rem;
     }
 
-    /* Layout principal avec sidebar */
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0;
+    /* Sommaire des livres (bandeau full width) */
+    .summary-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      position: sticky;
+      top: 50px;
+      z-index: 20;
     }
-    @media (min-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr 220px;
-      }
+    .summary-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0.5rem 0 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr));
+      gap: 0.35rem;
+    }
+    .summary-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.35rem 0.2rem;
+      font-size: 0.75rem;
+      user-select: none;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--text);
+      text-decoration: none;
+      text-align: center;
+    }
+    .summary-item:hover {
+      background: var(--accent-weak);
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
+    /* Contenu principal */
     main {
       padding: 0.6rem;
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
-    }
-
-    /* Sidebar de navigation (desktop) */
-    aside {
-      background: var(--sidebar-bg);
-      border-left: 1px solid var(--border);
-      padding: 0.6rem 0.5rem;
-      position: sticky;
-      top: 50px; /* hauteur approx du header */
-      height: calc(100vh - 50px);
-      overflow-y: auto;
-      display: none;
-    }
-    @media (min-width: 900px) {
-      aside {
-        display: block;
-      }
-    }
-    .nav-section-title {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--muted);
-      margin: 0.6rem 0.4rem 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .nav-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .nav-item {
-      margin: 0;
-    }
-    .nav-link {
-      display: block;
-      padding: 0.25rem 0.4rem;
-      font-size: 0.75rem;
-      color: var(--text);
-      text-decoration: none;
-      border-radius: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .nav-link:hover {
-      background: var(--accent-weak);
-      color: var(--accent);
-    }
-
-    /* Overlay menu mobile */
-    .mobile-menu-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--overlay-bg);
-      z-index: 40;
-      display: none;
-      align-items: stretch;
-      justify-content: flex-end;
-    }
-    .mobile-menu-overlay.active {
-      display: flex;
-    }
-    .mobile-menu {
-      background: var(--card);
-      width: min(85vw, 320px);
-      height: 100%;
-      overflow-y: auto;
-      padding: 0.75rem 0.5rem;
-      box-shadow: -2px 0 8px rgba(0,0,0,0.25);
-    }
-    .mobile-menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 0.25rem 0.4rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 0.4rem;
-    }
-    .mobile-menu-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .mobile-close {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
     }
 
     /* Livres et chapitres */
@@ -231,7 +172,7 @@
       border-radius: 8px;
       padding: 0.55rem;
       margin-bottom: 0.65rem;
-      scroll-margin-top: 60px;
+      scroll-margin-top: 110px;
     }
     .book-header {
       display: flex;
@@ -273,7 +214,24 @@
       font-weight: 600;
     }
 
-    /* Modal reset */
+    /* Bouton réinitialiser en bas de page */
+    .reset-section {
+      max-width: 900px;
+      margin: 1.2rem auto 2rem;
+      padding: 0 0.6rem;
+      text-align: center;
+    }
+    .reset-button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Modal reset (3 étapes) */
     .reset-modal {
       position: fixed;
       inset: 0;
@@ -291,7 +249,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.9rem;
-      max-width: 320px;
+      max-width: 340px;
       width: 90%;
     }
     .reset-card h2 {
@@ -308,12 +266,116 @@
       gap: 0.4rem;
       justify-content: flex-end;
     }
+
+    /* Overlay menu mobile (sommaire alternatif) */
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      z-index: 40;
+      display: none;
+      align-items: stretch;
+      justify-content: flex-end;
+    }
+    .mobile-menu-overlay.active {
+      display: flex;
+    }
+    .mobile-menu {
+      background: var(--card);
+      width: min(85vw, 320px);
+      height: 100%;
+      overflow-y: auto;
+      padding: 0.75rem 0.5rem;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.25);
+    }
+    .mobile-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0.25rem 0.4rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.4rem;
+    }
+    .mobile-menu-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .mobile-close {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    /* Modal config */
+    .config-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+    }
+    .config-modal.active {
+      display: flex;
+    }
+    .config-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      max-width: 360px;
+      width: 90%;
+    }
+    .config-card h2 {
+      font-size: 0.95rem;
+      margin: 0 0 0.5rem;
+    }
+    .config-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0 0 0.6rem;
+    }
+    .config-field {
+      margin-bottom: 0.6rem;
+    }
+    .config-field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .config-field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.35rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .config-actions {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-end;
+      margin-top: 0.6rem;
+    }
+    .status-line {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      min-height: 1em;
+    }
   </style>
 </head>
 <body>
   <header>
     <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
       <button id="menuToggle">Livres</button>
+      <button id="configToggle" class="secondary">Config</button>
       <h1>Suivi de lecture de la Bible</h1>
     </div>
     <div class="progress-wrap">
@@ -323,19 +385,27 @@
       <div class="progress-text" id="progressText">0%</div>
     </div>
     <div class="actions">
-      <button id="resetBtn" class="secondary">Recommencer</button>
+      <!-- bouton Réinitialiser déplacé en bas de page -->
     </div>
   </header>
 
-  <div class="layout">
-    <main id="app"></main>
-
-    <aside id="sidebar">
-      <!-- Rempli dynamiquement (desktop) -->
-    </aside>
+  <!-- Barre de sommaire full width -->
+  <div class="summary-bar">
+    <div id="summaryContent">
+      <!-- Rempli dynamiquement -->
+    </div>
   </div>
 
-  <!-- Overlay menu mobile -->
+  <main id="app">
+    <!-- Livres + chapitres -->
+  </main>
+
+  <!-- Section Réinitialiser en bas -->
+  <div class="reset-section">
+    <button class="reset-button" id="resetBtn">Réinitialiser</button>
+  </div>
+
+  <!-- Overlay menu mobile (sommaire alternatif) -->
   <div class="mobile-menu-overlay" id="mobileMenuOverlay">
     <div class="mobile-menu">
       <div class="mobile-menu-header">
@@ -348,20 +418,52 @@
     </div>
   </div>
 
-  <!-- Modal reset -->
+  <!-- Modal reset (3 étapes) -->
   <div class="reset-modal" id="resetModal">
     <div class="reset-card">
-      <h2>Recommencer un cycle ?</h2>
-      <p>Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.</p>
-      <div class="reset-actions">
-        <button class="secondary" id="cancelReset">Annuler</button>
-        <button id="confirmReset">Tout décocher</button>
+      <h2 id="resetTitle">Réinitialiser la progression ?</h2>
+      <p id="resetText">Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.</p>
+      <div class="reset-actions" id="resetActions1">
+        <button class="secondary" id="resetCancel1">Annuler</button>
+        <button id="resetNext1">Continuer</button>
+      </div>
+      <div class="reset-actions" id="resetActions2" style="display:none;">
+        <button class="secondary" id="resetCancel2">Retour</button>
+        <button id="resetConfirm2">Réinitialiser la progression</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal config -->
+  <div class="config-modal" id="configModal">
+    <div class="config-card">
+      <h2>Configuration de la synchronisation</h2>
+      <p>Ces paramètres sont stockés localement sur cet appareil.</p>
+
+      <div class="config-field">
+        <label for="cfgUser">Nom d’utilisateur GitHub</label>
+        <input id="cfgUser" type="text" placeholder="ex: jmmermet" />
+      </div>
+      <div class="config-field">
+        <label for="cfgRepo">Nom du dépôt de données</label>
+        <input id="cfgRepo" type="text" placeholder="ex: bible-tracker-data" />
+      </div>
+      <div class="config-field">
+        <label for="cfgToken">Token GitHub (scope repo)</label>
+        <input id="cfgToken" type="password" placeholder="ghp_..." />
+      </div>
+
+      <div class="status-line" id="configStatus"></div>
+
+      <div class="config-actions">
+        <button class="secondary" id="configCancel">Fermer</button>
+        <button id="configSave">Enregistrer</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Structure de la Bible avec abréviations françaises usuelles
+    // Structure de la Bible avec abréviations
     const bible = [
       {
         section: "Ancien Testament",
@@ -441,9 +543,112 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_v3";
+    const STORAGE_KEY = "bibleProgress_v5";
+    const CONFIG_KEY = "bibleSyncConfig_v1";
 
-    function loadProgress() {
+    // --- Gestion config ---
+
+    function loadConfig() {
+      try {
+        const raw = localStorage.getItem(CONFIG_KEY);
+        if (!raw) return null;
+        const cfg = JSON.parse(raw);
+        if (!cfg.user || !cfg.repo || !cfg.token) return null;
+        return cfg;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveConfig(cfg) {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+    }
+
+    // --- Gestion progression (locale + remote) ---
+
+    let remoteProgress = {};
+    let isSyncEnabled = false;
+
+    async function loadRemoteProgress() {
+      const cfg = loadConfig();
+      if (!cfg) {
+        isSyncEnabled = false;
+        return {};
+      }
+      isSyncEnabled = true;
+      const url = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/progress.json`;
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `token ${cfg.token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (res.status === 404) {
+          return {};
+        }
+        if (!res.ok) {
+          console.warn('Erreur chargement progression distante', res.status);
+          return {};
+        }
+        const data = await res.json();
+        const content = atob(data.content);
+        const json = JSON.parse(content);
+        return json || {};
+      } catch (e) {
+        console.warn('Erreur chargement progression distante', e);
+        return {};
+      }
+    }
+
+    async function saveRemoteProgress(progress) {
+      const cfg = loadConfig();
+      if (!cfg) return;
+      const url = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/progress.json`;
+
+      let sha = null;
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `token ${cfg.token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          sha = data.sha;
+        }
+      } catch {
+        // ignore
+      }
+
+      const content = JSON.stringify(progress, null, 2);
+      const body = {
+        message: 'Mise à jour progression Bible',
+        content: btoa(unescape(encodeURIComponent(content))),
+        branch: 'main'
+      };
+      if (sha) body.sha = sha;
+
+      try {
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${cfg.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+          console.warn('Erreur sauvegarde progression distante', res.status);
+        }
+      } catch (e) {
+        console.warn('Erreur sauvegarde progression distante', e);
+      }
+    }
+
+    function loadLocalProgress() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return {};
@@ -455,7 +660,7 @@
       }
     }
 
-    function saveProgress(data) {
+    function saveLocalProgress(data) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
@@ -463,31 +668,56 @@
       return `${bookName}:${chapterNumber}`;
     }
 
-    function render() {
-      const progress = loadProgress();
+    // --- Rendu ---
+
+    async function render() {
+      remoteProgress = await loadRemoteProgress();
+
+      let progress;
+      if (isSyncEnabled) {
+        progress = { ...loadLocalProgress(), ...remoteProgress };
+      } else {
+        progress = loadLocalProgress();
+      }
+
       const app = document.getElementById("app");
-      const sidebar = document.getElementById("sidebar");
+      const summaryContent = document.getElementById("summaryContent");
       const mobileMenuContent = document.getElementById("mobileMenuContent");
 
       app.innerHTML = "";
-      sidebar.innerHTML = "";
+      summaryContent.innerHTML = "";
       mobileMenuContent.innerHTML = "";
 
       let totalChapters = 0;
       let checkedChapters = 0;
 
-      // Construire sidebar (desktop) et menu mobile
+      // 1. Barre de sommaire full width
       for (const section of bible) {
-        // Sidebar
-        const sectionTitleSide = document.createElement("div");
-        sectionTitleSide.className = "nav-section-title";
-        sectionTitleSide.textContent = section.section;
-        sidebar.appendChild(sectionTitleSide);
+        const sectionTitle = document.createElement("div");
+        sectionTitle.className = "summary-section-title";
+        sectionTitle.textContent = section.section;
+        summaryContent.appendChild(sectionTitle);
 
-        const navListSide = document.createElement("ul");
-        navListSide.className = "nav-list";
+        const summaryGrid = document.createElement("div");
+        summaryGrid.className = "summary-grid";
 
-        // Mobile menu
+        for (const book of section.books) {
+          const item = document.createElement("a");
+          item.className = "summary-item";
+          item.href = `#book-${slugify(book.name)}`;
+          item.textContent = book.abbr;
+          item.title = book.name;
+          item.addEventListener("click", (e) => {
+            // Sur mobile, on peut aussi fermer un menu si besoin
+          });
+          summaryGrid.appendChild(item);
+        }
+
+        summaryContent.appendChild(summaryGrid);
+      }
+
+      // 2. Menu mobile (optionnel, garde la même logique)
+      for (const section of bible) {
         const sectionTitleMobile = document.createElement("div");
         sectionTitleMobile.className = "nav-section-title";
         sectionTitleMobile.textContent = section.section;
@@ -497,18 +727,6 @@
         navListMobile.className = "nav-list";
 
         for (const book of section.books) {
-          // Sidebar link
-          const navItemSide = document.createElement("li");
-          navItemSide.className = "nav-item";
-          const navLinkSide = document.createElement("a");
-          navLinkSide.className = "nav-link";
-          navLinkSide.href = `#book-${slugify(book.name)}`;
-          navLinkSide.textContent = book.abbr;
-          navLinkSide.title = book.name;
-          navItemSide.appendChild(navLinkSide);
-          navListSide.appendChild(navItemSide);
-
-          // Mobile link
           const navItemMobile = document.createElement("li");
           navItemMobile.className = "nav-item";
           const navLinkMobile = document.createElement("a");
@@ -517,18 +735,16 @@
           navLinkMobile.textContent = book.abbr;
           navLinkMobile.title = book.name;
           navLinkMobile.addEventListener("click", () => {
-            // Fermer le menu après sélection
             document.getElementById("mobileMenuOverlay").classList.remove("active");
           });
           navItemMobile.appendChild(navLinkMobile);
           navListMobile.appendChild(navItemMobile);
         }
 
-        sidebar.appendChild(navListSide);
         mobileMenuContent.appendChild(navListMobile);
       }
 
-      // Contenu principal (livres + chapitres)
+      // 3. Livres + chapitres
       for (const section of bible) {
         const sectionTitle = document.createElement("h2");
         sectionTitle.className = "section-title";
@@ -572,16 +788,8 @@
               btn.classList.add("checked");
               checkedChapters++;
             }
-            btn.textContent = c;
             btn.addEventListener("click", () => {
-              const current = loadProgress();
-              if (current[key]) {
-                delete current[key];
-              } else {
-                current[key] = true;
-              }
-              saveProgress(current);
-              render();
+              handleChapterToggle(book.name, c);
             });
             chaptersGrid.appendChild(btn);
             totalChapters++;
@@ -597,6 +805,33 @@
       document.getElementById("progressText").textContent = percent + "%";
     }
 
+    async function handleChapterToggle(bookName, chapterNumber) {
+      const key = chapterKey(bookName, chapterNumber);
+
+      let local = loadLocalProgress();
+      let progress;
+      if (isSyncEnabled) {
+        remoteProgress = await loadRemoteProgress();
+        progress = { ...local, ...remoteProgress };
+      } else {
+        progress = local;
+      }
+
+      if (progress[key]) {
+        delete progress[key];
+      } else {
+        progress[key] = true;
+      }
+
+      saveLocalProgress(progress);
+
+      if (isSyncEnabled) {
+        saveRemoteProgress(progress);
+      }
+
+      render();
+    }
+
     function slugify(str) {
       return str
         .toLowerCase()
@@ -604,27 +839,64 @@
         .replace(/^-+|-+$/g, "");
     }
 
-    // Reset modal logic
+    // --- Reset modal (3 étapes) ---
+
     const resetBtn = document.getElementById("resetBtn");
     const resetModal = document.getElementById("resetModal");
-    const cancelReset = document.getElementById("cancelReset");
-    const confirmReset = document.getElementById("confirmReset");
+
+    const resetTitle = document.getElementById("resetTitle");
+    const resetText = document.getElementById("resetText");
+
+    const resetActions1 = document.getElementById("resetActions1");
+    const resetActions2 = document.getElementById("resetActions2");
+
+    const resetCancel1 = document.getElementById("resetCancel1");
+    const resetNext1 = document.getElementById("resetNext1");
+
+    const resetCancel2 = document.getElementById("resetCancel2");
+    const resetConfirm2 = document.getElementById("resetConfirm2");
 
     resetBtn.addEventListener("click", () => {
+      resetTitle.textContent = "Réinitialiser la progression ?";
+      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
+      resetActions1.style.display = "flex";
+      resetActions2.style.display = "none";
       resetModal.classList.add("active");
     });
 
-    cancelReset.addEventListener("click", () => {
+    resetCancel1.addEventListener("click", () => {
       resetModal.classList.remove("active");
     });
 
-    confirmReset.addEventListener("click", () => {
+    resetNext1.addEventListener("click", () => {
+      resetTitle.textContent = "Êtes-vous sûr ?";
+      resetText.textContent = "Toute ta progression sera effacée. Es‑tu certain de vouloir continuer ?";
+      resetActions1.style.display = "none";
+      resetActions2.style.display = "flex";
+    });
+
+    resetCancel2.addEventListener("click", () => {
+      resetTitle.textContent = "Réinitialiser la progression ?";
+      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
+      resetActions1.style.display = "flex";
+      resetActions2.style.display = "none";
+    });
+
+    resetConfirm2.addEventListener("click", async () => {
+      // Reset local
       localStorage.removeItem(STORAGE_KEY);
+
+      // Reset distant si sync activée
+      if (isSyncEnabled) {
+        await saveRemoteProgress({});
+      }
+
       resetModal.classList.remove("active");
       render();
     });
 
-    // Menu mobile
+    // --- Menu mobile ---
+
     const menuToggle = document.getElementById("menuToggle");
     const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
     const mobileMenuClose = document.getElementById("mobileMenuClose");
@@ -638,10 +910,59 @@
     });
 
     mobileMenuOverlay.addEventListener("click", (e) => {
-      // Fermer si on clique en dehors du menu
       if (e.target === mobileMenuOverlay) {
         mobileMenuOverlay.classList.remove("active");
       }
+    });
+
+    // --- Modal config ---
+
+    const configToggle = document.getElementById("configToggle");
+    const configModal = document.getElementById("configModal");
+    const configCancel = document.getElementById("configCancel");
+    const configSave = document.getElementById("configSave");
+    const configStatus = document.getElementById("configStatus");
+    const cfgUser = document.getElementById("cfgUser");
+    const cfgRepo = document.getElementById("cfgRepo");
+    const cfgToken = document.getElementById("cfgToken");
+
+    configToggle.addEventListener("click", () => {
+      const cfg = loadConfig();
+      if (cfg) {
+        cfgUser.value = cfg.user || "";
+        cfgRepo.value = cfg.repo || "";
+        cfgToken.value = cfg.token || "";
+      } else {
+        cfgUser.value = "";
+        cfgRepo.value = "";
+        cfgToken.value = "";
+      }
+      configStatus.textContent = "";
+      configModal.classList.add("active");
+    });
+
+    configCancel.addEventListener("click", () => {
+      configModal.classList.remove("active");
+    });
+
+    configSave.addEventListener("click", async () => {
+      const user = cfgUser.value.trim();
+      const repo = cfgRepo.value.trim();
+      const token = cfgToken.value.trim();
+
+      if (!user || !repo || !token) {
+        configStatus.textContent = "Tous les champs sont requis.";
+        return;
+      }
+
+      const cfg = { user, repo, token };
+      saveConfig(cfg);
+
+      configStatus.textContent = "Configuration enregistrée. Synchronisation activée.";
+      setTimeout(() => {
+        configModal.classList.remove("active");
+        render();
+      }, 800);
     });
 
     // Initial render
