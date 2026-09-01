@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bible – Étape 1 (header + progression)</title>
+  <title>Bible – Étape 1 bis</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -81,59 +81,42 @@
       text-align: right;
     }
 
-    main {
-      padding: 0.6rem;
+    /* On garde la structure simple de bible-tous-simple */
+    .container {
+      padding: 1rem;
       max-width: 900px;
       margin: 0 auto;
-      width: 100%;
     }
-
-    .section-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin: 0.9rem 0 0.35rem;
+    h2 {
+      font-size: 1rem;
+      margin: 1rem 0 0.5rem;
     }
     .book {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.55rem;
-      margin-bottom: 0.65rem;
-    }
-    .book-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.35rem;
+      padding: 0.6rem;
+      margin-bottom: 0.8rem;
     }
     .book-title {
       font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .book-progress {
-      font-size: 0.65rem;
-      color: var(--muted);
+      margin-bottom: 0.4rem;
     }
     .chapters {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-      gap: 0.25rem;
+      gap: 0.3rem;
     }
     .chapter {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.25rem 0;
       font-size: 0.8rem;
       font-weight: 500;
-      user-select: none;
+      text-align: center;
       cursor: pointer;
       background: var(--card);
       color: var(--text);
-      min-height: 1.8rem;
-      text-align: center;
     }
     .chapter.checked {
       background: var(--accent-weak);
@@ -154,7 +137,7 @@
     </div>
   </header>
 
-  <main id="app"></main>
+  <div class="container" id="app"></div>
 
   <script>
     const bible = [
@@ -236,7 +219,7 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_etape1_v1";
+    const STORAGE_KEY = "bibleProgress_etape1bis_v1";
 
     function loadProgress() {
       try {
@@ -268,7 +251,6 @@
 
       for (const section of bible) {
         const sectionTitle = document.createElement("h2");
-        sectionTitle.className = "section-title";
         sectionTitle.textContent = section.section;
         app.appendChild(sectionTitle);
 
@@ -276,12 +258,53 @@
           const bookDiv = document.createElement("div");
           bookDiv.className = "book";
 
-          const header = document.createElement("div");
-          header.className = "book-header";
-
           const title = document.createElement("div");
           title.className = "book-title";
           title.textContent = `${book.name} (${book.abbr})`;
+          bookDiv.appendChild(title);
 
-          const bookProgress = document.createElement("div");
-          bookProgress.className
+          const chaptersGrid = document.createElement("div");
+          chaptersGrid.className = "chapters";
+
+          for (let c = 1; c <= book.chapters; c++) {
+            const key = chapterKey(book.name, c);
+            const btn = document.createElement("button");
+            btn.className = "chapter";
+
+            // Affichage explicite du numéro
+            btn.textContent = String(c);
+
+            if (progress[key]) {
+              btn.classList.add("checked");
+              checkedChapters++;
+            }
+
+            btn.addEventListener("click", () => {
+              const current = loadProgress();
+              if (current[key]) {
+                delete current[key];
+              } else {
+                current[key] = true;
+              }
+              saveProgress(current);
+              render();
+            });
+
+            chaptersGrid.appendChild(btn);
+            totalChapters++;
+          }
+
+          bookDiv.appendChild(chaptersGrid);
+          app.appendChild(bookDiv);
+        }
+      }
+
+      const percent = totalChapters === 0 ? 0 : Math.round((checkedChapters / totalChapters) * 100);
+      document.getElementById("progressFill").style.width = percent + "%";
+      document.getElementById("progressText").textContent = percent + "%";
+    }
+
+    render();
+  </script>
+</body>
+</html>
