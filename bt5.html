@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Suivi de lecture de la Bible</title>
+  <title>Suivi de lecture de la Bible – Test open/close</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -221,12 +221,12 @@
       font-weight: 600;
     }
 
-    /* Livre compacté (terminé) - version renforcée */
+    /* Livre compacté (terminé) */
     .book.compact .chapters {
-      display: none !important;
+      display: none;
     }
     .book.compact {
-      padding: 0.4rem 0.55rem !important;
+      padding: 0.4rem 0.55rem;
     }
 
     /* Bouton Réinitialiser en bas */
@@ -418,7 +418,7 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_finale_complete_v2";
+    const STORAGE_KEY = "bibleProgress_testopenClose_v1";
 
     // État "ouvert/fermé" des livres (non persisté, reset à chaque rechargement)
     const bookOpenState = {};
@@ -663,7 +663,6 @@
     });
 
     resetConfirm3.addEventListener("click", () => {
-      // Effacer la progression
       localStorage.removeItem(STORAGE_KEY);
 
       // Réouvrir toutes les boîtes
