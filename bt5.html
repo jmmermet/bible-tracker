@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Suivi de lecture de la Bible – Test coche</title>
+  <title>Suivi de lecture de la Bible – Test compact 2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -219,6 +219,14 @@
       font-weight: 600;
     }
 
+    /* Livre compacté (terminé) */
+    .book.compact .chapters {
+      display: none;
+    }
+    .book.compact {
+      padding: 0.4rem 0.55rem;
+    }
+
     /* Bouton Réinitialiser en bas */
     .reset-section {
       max-width: 900px;
@@ -408,7 +416,7 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_testcheck_v1";
+    const STORAGE_KEY = "bibleProgress_testcompact2_v1";
 
     function loadProgress() {
       try {
@@ -495,6 +503,11 @@
             if (progress[key]) bookChecked++;
           }
           const isComplete = bookChecked === book.chapters;
+
+          // Si le livre est complet, on applique la classe compact
+          if (isComplete) {
+            bookDiv.classList.add("compact");
+          }
 
           const header = document.createElement("div");
           header.className = "book-header";
