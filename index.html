@@ -14,6 +14,7 @@
       --accent-weak: #dbeafe;
       --border: #e5e7eb;
       --success: #16a34a;
+      --sidebar-bg: #f3f4f6;
       --overlay-bg: rgba(0,0,0,0.6);
     }
     @media (prefers-color-scheme: dark) {
@@ -26,6 +27,7 @@
         --accent-weak: #1e3a8a;
         --border: #1f2937;
         --success: #22c55e;
+        --sidebar-bg: #0f172a;
       }
     }
     html, body {
@@ -109,35 +111,47 @@
       min-width: 2.2rem;
     }
 
-    /* Sommaire des livres (bandeau full width) */
-    .summary-bar {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0.5rem 0.75rem;
-      position: sticky;
-      top: 50px;
-      z-index: 20;
+    /* Overlay menu "Livres" pleine largeur */
+    .books-overlay {
+      position: fixed;
+      top: 50px; /* juste sous le header */
+      left: 0;
+      right: 0;
+      background: var(--overlay-bg);
+      z-index: 40;
+      display: none;
+      padding: 0.5rem;
     }
-    .summary-section-title {
+    .books-overlay.active {
+      display: block;
+    }
+    .books-panel {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 0.6rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .books-section-title {
       font-size: 0.7rem;
       font-weight: 700;
       color: var(--muted);
-      margin: 0.5rem 0 0.25rem;
+      margin: 0.6rem 0.4rem 0.25rem;
       text-transform: uppercase;
       letter-spacing: 0.03em;
     }
-    .summary-grid {
+    .books-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr));
-      gap: 0.35rem;
+      grid-template-columns: repeat(auto-fill, minmax(2.8rem, 1fr));
+      gap: 0.4rem;
     }
-    .summary-item {
+    .book-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 0.35rem 0.2rem;
+      padding: 0.4rem 0.2rem;
       font-size: 0.75rem;
       user-select: none;
       cursor: pointer;
@@ -146,18 +160,77 @@
       text-decoration: none;
       text-align: center;
     }
-    .summary-item:hover {
+    .book-btn:hover {
       background: var(--accent-weak);
       color: var(--accent);
       border-color: var(--accent);
     }
 
-    /* Contenu principal */
+    /* Layout principal avec sidebar (desktop) */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    @media (min-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr 220px;
+      }
+    }
+
     main {
       padding: 0.6rem;
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
+    }
+
+    /* Sidebar de navigation (desktop) */
+    aside {
+      background: var(--sidebar-bg);
+      border-left: 1px solid var(--border);
+      padding: 0.6rem 0.5rem;
+      position: sticky;
+      top: 50px;
+      height: calc(100vh - 50px);
+      overflow-y: auto;
+      display: none;
+    }
+    @media (min-width: 900px) {
+      aside {
+        display: block;
+      }
+    }
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0.6rem 0.4rem 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-item {
+      margin: 0;
+    }
+    .nav-link {
+      display: block;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-link:hover {
+      background: var(--accent-weak);
+      color: var(--accent);
     }
 
     /* Livres et chapitres */
@@ -172,7 +245,7 @@
       border-radius: 8px;
       padding: 0.55rem;
       margin-bottom: 0.65rem;
-      scroll-margin-top: 110px;
+      scroll-margin-top: 60px;
     }
     .book-header {
       display: flex;
@@ -190,7 +263,7 @@
     }
     .chapters {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(1.9rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
       gap: 0.25rem;
     }
     .chapter {
@@ -199,13 +272,14 @@
       justify-content: center;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 0.18rem 0;
-      font-size: 0.7rem;
+      padding: 0.25rem 0;
+      font-size: 0.75rem;
       user-select: none;
       cursor: pointer;
       background: var(--card);
       color: var(--text);
       text-decoration: none;
+      min-height: 1.8rem;
     }
     .chapter.checked {
       background: var(--accent-weak);
@@ -214,24 +288,7 @@
       font-weight: 600;
     }
 
-    /* Bouton réinitialiser en bas de page */
-    .reset-section {
-      max-width: 900px;
-      margin: 1.2rem auto 2rem;
-      padding: 0 0.6rem;
-      text-align: center;
-    }
-    .reset-button {
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
-    /* Modal reset (3 étapes) */
+    /* Modal reset */
     .reset-modal {
       position: fixed;
       inset: 0;
@@ -249,7 +306,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.9rem;
-      max-width: 340px;
+      max-width: 320px;
       width: 90%;
     }
     .reset-card h2 {
@@ -267,47 +324,6 @@
       justify-content: flex-end;
     }
 
-    /* Overlay menu mobile (sommaire alternatif) */
-    .mobile-menu-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--overlay-bg);
-      z-index: 40;
-      display: none;
-      align-items: stretch;
-      justify-content: flex-end;
-    }
-    .mobile-menu-overlay.active {
-      display: flex;
-    }
-    .mobile-menu {
-      background: var(--card);
-      width: min(85vw, 320px);
-      height: 100%;
-      overflow-y: auto;
-      padding: 0.75rem 0.5rem;
-      box-shadow: -2px 0 8px rgba(0,0,0,0.25);
-    }
-    .mobile-menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 0.25rem 0.4rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 0.4rem;
-    }
-    .mobile-menu-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .mobile-close {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-    }
-
     /* Modal config */
     .config-modal {
       position: fixed;
@@ -316,657 +332,3 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 60;
-    }
-    .config-modal.active {
-      display: flex;
-    }
-    .config-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.9rem;
-      max-width: 360px;
-      width: 90%;
-    }
-    .config-card h2 {
-      font-size: 0.95rem;
-      margin: 0 0 0.5rem;
-    }
-    .config-card p {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin: 0 0 0.6rem;
-    }
-    .config-field {
-      margin-bottom: 0.6rem;
-    }
-    .config-field label {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 0.2rem;
-    }
-    .config-field input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.35rem 0.4rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 0.85rem;
-    }
-    .config-actions {
-      display: flex;
-      gap: 0.4rem;
-      justify-content: flex-end;
-      margin-top: 0.6rem;
-    }
-    .status-line {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 0.4rem;
-      min-height: 1em;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
-      <button id="menuToggle">Livres</button>
-      <button id="configToggle" class="secondary">Config</button>
-      <h1>Suivi de lecture de la Bible</h1>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="progress-text" id="progressText">0%</div>
-    </div>
-    <div class="actions">
-      <!-- bouton Réinitialiser déplacé en bas de page -->
-    </div>
-  </header>
-
-  <!-- Barre de sommaire full width -->
-  <div class="summary-bar">
-    <div id="summaryContent">
-      <!-- Rempli dynamiquement -->
-    </div>
-  </div>
-
-  <main id="app">
-    <!-- Livres + chapitres -->
-  </main>
-
-  <!-- Section Réinitialiser en bas -->
-  <div class="reset-section">
-    <button class="reset-button" id="resetBtn">Réinitialiser</button>
-  </div>
-
-  <!-- Overlay menu mobile (sommaire alternatif) -->
-  <div class="mobile-menu-overlay" id="mobileMenuOverlay">
-    <div class="mobile-menu">
-      <div class="mobile-menu-header">
-        <div class="mobile-menu-title">Livres de la Bible</div>
-        <button class="mobile-close" id="mobileMenuClose">Fermer</button>
-      </div>
-      <div id="mobileMenuContent">
-        <!-- Rempli dynamiquement -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal reset (3 étapes) -->
-  <div class="reset-modal" id="resetModal">
-    <div class="reset-card">
-      <h2 id="resetTitle">Réinitialiser la progression ?</h2>
-      <p id="resetText">Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.</p>
-      <div class="reset-actions" id="resetActions1">
-        <button class="secondary" id="resetCancel1">Annuler</button>
-        <button id="resetNext1">Continuer</button>
-      </div>
-      <div class="reset-actions" id="resetActions2" style="display:none;">
-        <button class="secondary" id="resetCancel2">Retour</button>
-        <button id="resetConfirm2">Réinitialiser la progression</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal config -->
-  <div class="config-modal" id="configModal">
-    <div class="config-card">
-      <h2>Configuration de la synchronisation</h2>
-      <p>Ces paramètres sont stockés localement sur cet appareil.</p>
-
-      <div class="config-field">
-        <label for="cfgUser">Nom d’utilisateur GitHub</label>
-        <input id="cfgUser" type="text" placeholder="ex: jmmermet" />
-      </div>
-      <div class="config-field">
-        <label for="cfgRepo">Nom du dépôt de données</label>
-        <input id="cfgRepo" type="text" placeholder="ex: bible-tracker-data" />
-      </div>
-      <div class="config-field">
-        <label for="cfgToken">Token GitHub (scope repo)</label>
-        <input id="cfgToken" type="password" placeholder="ghp_..." />
-      </div>
-
-      <div class="status-line" id="configStatus"></div>
-
-      <div class="config-actions">
-        <button class="secondary" id="configCancel">Fermer</button>
-        <button id="configSave">Enregistrer</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Structure de la Bible avec abréviations
-    const bible = [
-      {
-        section: "Ancien Testament",
-        books: [
-          { name: "Genèse", abbr: "Gen", chapters: 50 },
-          { name: "Exode", abbr: "Ex", chapters: 40 },
-          { name: "Lévitique", abbr: "Lé", chapters: 27 },
-          { name: "Nombres", abbr: "Nb", chapters: 36 },
-          { name: "Deutéronome", abbr: "Dt", chapters: 34 },
-          { name: "Josué", abbr: "Jos", chapters: 24 },
-          { name: "Juges", abbr: "Jg", chapters: 21 },
-          { name: "Ruth", abbr: "Rt", chapters: 4 },
-          { name: "1 Samuel", abbr: "1 S", chapters: 31 },
-          { name: "2 Samuel", abbr: "2 S", chapters: 24 },
-          { name: "1 Rois", abbr: "1 R", chapters: 22 },
-          { name: "2 Rois", abbr: "2 R", chapters: 25 },
-          { name: "1 Chroniques", abbr: "1 Ch", chapters: 29 },
-          { name: "2 Chroniques", abbr: "2 Ch", chapters: 36 },
-          { name: "Esdras", abbr: "Es", chapters: 10 },
-          { name: "Néhémie", abbr: "Ne", chapters: 13 },
-          { name: "Esther", abbr: "Est", chapters: 10 },
-          { name: "Job", abbr: "Jb", chapters: 42 },
-          { name: "Psaumes", abbr: "Ps", chapters: 150 },
-          { name: "Proverbes", abbr: "Pr", chapters: 31 },
-          { name: "Ecclésiaste", abbr: "Ec", chapters: 12 },
-          { name: "Cantique des cantiques", abbr: "Ct", chapters: 8 },
-          { name: "Ésaïe", abbr: "És", chapters: 66 },
-          { name: "Jérémie", abbr: "Jr", chapters: 52 },
-          { name: "Lamentations", abbr: "Lm", chapters: 5 },
-          { name: "Ézéchiel", abbr: "Éz", chapters: 48 },
-          { name: "Daniel", abbr: "Dn", chapters: 12 },
-          { name: "Osée", abbr: "Os", chapters: 14 },
-          { name: "Joël", abbr: "Jl", chapters: 3 },
-          { name: "Amos", abbr: "Am", chapters: 9 },
-          { name: "Abdias", abbr: "Ab", chapters: 1 },
-          { name: "Jonas", abbr: "Jon", chapters: 4 },
-          { name: "Michée", abbr: "Mi", chapters: 7 },
-          { name: "Nahum", abbr: "Na", chapters: 3 },
-          { name: "Habacuc", abbr: "Ha", chapters: 3 },
-          { name: "Sophonie", abbr: "So", chapters: 3 },
-          { name: "Aggée", abbr: "Ag", chapters: 2 },
-          { name: "Zacharie", abbr: "Za", chapters: 14 },
-          { name: "Malachie", abbr: "Ml", chapters: 4 }
-        ]
-      },
-      {
-        section: "Nouveau Testament",
-        books: [
-          { name: "Matthieu", abbr: "Mt", chapters: 28 },
-          { name: "Marc", abbr: "Mc", chapters: 16 },
-          { name: "Luc", abbr: "Lc", chapters: 24 },
-          { name: "Jean", abbr: "Jn", chapters: 21 },
-          { name: "Actes des apôtres", abbr: "Act", chapters: 28 },
-          { name: "Romains", abbr: "Rm", chapters: 16 },
-          { name: "1 Corinthiens", abbr: "1 Co", chapters: 16 },
-          { name: "2 Corinthiens", abbr: "2 Co", chapters: 13 },
-          { name: "Galates", abbr: "Ga", chapters: 6 },
-          { name: "Éphésiens", abbr: "Ép", chapters: 6 },
-          { name: "Philippiens", abbr: "Ph", chapters: 4 },
-          { name: "Colossiens", abbr: "Col", chapters: 4 },
-          { name: "1 Thessaloniciens", abbr: "1 Th", chapters: 5 },
-          { name: "2 Thessaloniciens", abbr: "2 Th", chapters: 3 },
-          { name: "1 Timothée", abbr: "1 Tm", chapters: 6 },
-          { name: "2 Timothée", abbr: "2 Tm", chapters: 4 },
-          { name: "Tite", abbr: "Tt", chapters: 3 },
-          { name: "Philémon", abbr: "Phm", chapters: 1 },
-          { name: "Hébreux", abbr: "He", chapters: 13 },
-          { name: "Jacques", abbr: "Jc", chapters: 5 },
-          { name: "1 Pierre", abbr: "1 P", chapters: 5 },
-          { name: "2 Pierre", abbr: "2 P", chapters: 3 },
-          { name: "1 Jean", abbr: "1 Jn", chapters: 5 },
-          { name: "2 Jean", abbr: "2 Jn", chapters: 1 },
-          { name: "3 Jean", abbr: "3 Jn", chapters: 1 },
-          { name: "Jude", abbr: "Jude", chapters: 1 },
-          { name: "Apocalypse", abbr: "Ap", chapters: 22 }
-        ]
-      }
-    ];
-
-    const STORAGE_KEY = "bibleProgress_v5";
-    const CONFIG_KEY = "bibleSyncConfig_v1";
-
-    // --- Gestion config ---
-
-    function loadConfig() {
-      try {
-        const raw = localStorage.getItem(CONFIG_KEY);
-        if (!raw) return null;
-        const cfg = JSON.parse(raw);
-        if (!cfg.user || !cfg.repo || !cfg.token) return null;
-        return cfg;
-      } catch {
-        return null;
-      }
-    }
-
-    function saveConfig(cfg) {
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
-    }
-
-    // --- Gestion progression (locale + remote) ---
-
-    let remoteProgress = {};
-    let isSyncEnabled = false;
-
-    async function loadRemoteProgress() {
-      const cfg = loadConfig();
-      if (!cfg) {
-        isSyncEnabled = false;
-        return {};
-      }
-      isSyncEnabled = true;
-      const url = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/progress.json`;
-      try {
-        const res = await fetch(url, {
-          headers: {
-            'Authorization': `token ${cfg.token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-        if (res.status === 404) {
-          return {};
-        }
-        if (!res.ok) {
-          console.warn('Erreur chargement progression distante', res.status);
-          return {};
-        }
-        const data = await res.json();
-        const content = atob(data.content);
-        const json = JSON.parse(content);
-        return json || {};
-      } catch (e) {
-        console.warn('Erreur chargement progression distante', e);
-        return {};
-      }
-    }
-
-    async function saveRemoteProgress(progress) {
-      const cfg = loadConfig();
-      if (!cfg) return;
-      const url = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/progress.json`;
-
-      let sha = null;
-      try {
-        const res = await fetch(url, {
-          headers: {
-            'Authorization': `token ${cfg.token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          sha = data.sha;
-        }
-      } catch {
-        // ignore
-      }
-
-      const content = JSON.stringify(progress, null, 2);
-      const body = {
-        message: 'Mise à jour progression Bible',
-        content: btoa(unescape(encodeURIComponent(content))),
-        branch: 'main'
-      };
-      if (sha) body.sha = sha;
-
-      try {
-        const res = await fetch(url, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `token ${cfg.token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        });
-        if (!res.ok) {
-          console.warn('Erreur sauvegarde progression distante', res.status);
-        }
-      } catch (e) {
-        console.warn('Erreur sauvegarde progression distante', e);
-      }
-    }
-
-    function loadLocalProgress() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return {};
-        const data = JSON.parse(raw);
-        if (typeof data !== "object" || data === null) return {};
-        return data;
-      } catch {
-        return {};
-      }
-    }
-
-    function saveLocalProgress(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function chapterKey(bookName, chapterNumber) {
-      return `${bookName}:${chapterNumber}`;
-    }
-
-    // --- Rendu ---
-
-    async function render() {
-      remoteProgress = await loadRemoteProgress();
-
-      let progress;
-      if (isSyncEnabled) {
-        progress = { ...loadLocalProgress(), ...remoteProgress };
-      } else {
-        progress = loadLocalProgress();
-      }
-
-      const app = document.getElementById("app");
-      const summaryContent = document.getElementById("summaryContent");
-      const mobileMenuContent = document.getElementById("mobileMenuContent");
-
-      app.innerHTML = "";
-      summaryContent.innerHTML = "";
-      mobileMenuContent.innerHTML = "";
-
-      let totalChapters = 0;
-      let checkedChapters = 0;
-
-      // 1. Barre de sommaire full width
-      for (const section of bible) {
-        const sectionTitle = document.createElement("div");
-        sectionTitle.className = "summary-section-title";
-        sectionTitle.textContent = section.section;
-        summaryContent.appendChild(sectionTitle);
-
-        const summaryGrid = document.createElement("div");
-        summaryGrid.className = "summary-grid";
-
-        for (const book of section.books) {
-          const item = document.createElement("a");
-          item.className = "summary-item";
-          item.href = `#book-${slugify(book.name)}`;
-          item.textContent = book.abbr;
-          item.title = book.name;
-          item.addEventListener("click", (e) => {
-            // Sur mobile, on peut aussi fermer un menu si besoin
-          });
-          summaryGrid.appendChild(item);
-        }
-
-        summaryContent.appendChild(summaryGrid);
-      }
-
-      // 2. Menu mobile (optionnel, garde la même logique)
-      for (const section of bible) {
-        const sectionTitleMobile = document.createElement("div");
-        sectionTitleMobile.className = "nav-section-title";
-        sectionTitleMobile.textContent = section.section;
-        mobileMenuContent.appendChild(sectionTitleMobile);
-
-        const navListMobile = document.createElement("ul");
-        navListMobile.className = "nav-list";
-
-        for (const book of section.books) {
-          const navItemMobile = document.createElement("li");
-          navItemMobile.className = "nav-item";
-          const navLinkMobile = document.createElement("a");
-          navLinkMobile.className = "nav-link";
-          navLinkMobile.href = `#book-${slugify(book.name)}`;
-          navLinkMobile.textContent = book.abbr;
-          navLinkMobile.title = book.name;
-          navLinkMobile.addEventListener("click", () => {
-            document.getElementById("mobileMenuOverlay").classList.remove("active");
-          });
-          navItemMobile.appendChild(navLinkMobile);
-          navListMobile.appendChild(navItemMobile);
-        }
-
-        mobileMenuContent.appendChild(navListMobile);
-      }
-
-      // 3. Livres + chapitres
-      for (const section of bible) {
-        const sectionTitle = document.createElement("h2");
-        sectionTitle.className = "section-title";
-        sectionTitle.textContent = section.section;
-        app.appendChild(sectionTitle);
-
-        for (const book of section.books) {
-          const bookDiv = document.createElement("div");
-          bookDiv.className = "book";
-          bookDiv.id = `book-${slugify(book.name)}`;
-
-          const header = document.createElement("div");
-          header.className = "book-header";
-
-          const title = document.createElement("div");
-          title.className = "book-title";
-          title.textContent = `${book.name} (${book.abbr})`;
-
-          const bookProgress = document.createElement("div");
-          bookProgress.className = "book-progress";
-
-          let bookChecked = 0;
-          for (let c = 1; c <= book.chapters; c++) {
-            const key = chapterKey(book.name, c);
-            if (progress[key]) bookChecked++;
-          }
-
-          bookProgress.textContent = `${bookChecked}/${book.chapters}`;
-          header.appendChild(title);
-          header.appendChild(bookProgress);
-          bookDiv.appendChild(header);
-
-          const chaptersGrid = document.createElement("div");
-          chaptersGrid.className = "chapters";
-
-          for (let c = 1; c <= book.chapters; c++) {
-            const key = chapterKey(book.name, c);
-            const btn = document.createElement("button");
-            btn.className = "chapter";
-            if (progress[key]) {
-              btn.classList.add("checked");
-              checkedChapters++;
-            }
-            btn.addEventListener("click", () => {
-              handleChapterToggle(book.name, c);
-            });
-            chaptersGrid.appendChild(btn);
-            totalChapters++;
-          }
-
-          bookDiv.appendChild(chaptersGrid);
-          app.appendChild(bookDiv);
-        }
-      }
-
-      const percent = totalChapters === 0 ? 0 : Math.round((checkedChapters / totalChapters) * 100);
-      document.getElementById("progressFill").style.width = percent + "%";
-      document.getElementById("progressText").textContent = percent + "%";
-    }
-
-    async function handleChapterToggle(bookName, chapterNumber) {
-      const key = chapterKey(bookName, chapterNumber);
-
-      let local = loadLocalProgress();
-      let progress;
-      if (isSyncEnabled) {
-        remoteProgress = await loadRemoteProgress();
-        progress = { ...local, ...remoteProgress };
-      } else {
-        progress = local;
-      }
-
-      if (progress[key]) {
-        delete progress[key];
-      } else {
-        progress[key] = true;
-      }
-
-      saveLocalProgress(progress);
-
-      if (isSyncEnabled) {
-        saveRemoteProgress(progress);
-      }
-
-      render();
-    }
-
-    function slugify(str) {
-      return str
-        .toLowerCase()
-        .replace(/[^a-z0-9à-ÿ]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-    }
-
-    // --- Reset modal (3 étapes) ---
-
-    const resetBtn = document.getElementById("resetBtn");
-    const resetModal = document.getElementById("resetModal");
-
-    const resetTitle = document.getElementById("resetTitle");
-    const resetText = document.getElementById("resetText");
-
-    const resetActions1 = document.getElementById("resetActions1");
-    const resetActions2 = document.getElementById("resetActions2");
-
-    const resetCancel1 = document.getElementById("resetCancel1");
-    const resetNext1 = document.getElementById("resetNext1");
-
-    const resetCancel2 = document.getElementById("resetCancel2");
-    const resetConfirm2 = document.getElementById("resetConfirm2");
-
-    resetBtn.addEventListener("click", () => {
-      resetTitle.textContent = "Réinitialiser la progression ?";
-      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
-      resetActions1.style.display = "flex";
-      resetActions2.style.display = "none";
-      resetModal.classList.add("active");
-    });
-
-    resetCancel1.addEventListener("click", () => {
-      resetModal.classList.remove("active");
-    });
-
-    resetNext1.addEventListener("click", () => {
-      resetTitle.textContent = "Êtes-vous sûr ?";
-      resetText.textContent = "Toute ta progression sera effacée. Es‑tu certain de vouloir continuer ?";
-      resetActions1.style.display = "none";
-      resetActions2.style.display = "flex";
-    });
-
-    resetCancel2.addEventListener("click", () => {
-      resetTitle.textContent = "Réinitialiser la progression ?";
-      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
-      resetActions1.style.display = "flex";
-      resetActions2.style.display = "none";
-    });
-
-    resetConfirm2.addEventListener("click", async () => {
-      // Reset local
-      localStorage.removeItem(STORAGE_KEY);
-
-      // Reset distant si sync activée
-      if (isSyncEnabled) {
-        await saveRemoteProgress({});
-      }
-
-      resetModal.classList.remove("active");
-      render();
-    });
-
-    // --- Menu mobile ---
-
-    const menuToggle = document.getElementById("menuToggle");
-    const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
-    const mobileMenuClose = document.getElementById("mobileMenuClose");
-
-    menuToggle.addEventListener("click", () => {
-      mobileMenuOverlay.classList.add("active");
-    });
-
-    mobileMenuClose.addEventListener("click", () => {
-      mobileMenuOverlay.classList.remove("active");
-    });
-
-    mobileMenuOverlay.addEventListener("click", (e) => {
-      if (e.target === mobileMenuOverlay) {
-        mobileMenuOverlay.classList.remove("active");
-      }
-    });
-
-    // --- Modal config ---
-
-    const configToggle = document.getElementById("configToggle");
-    const configModal = document.getElementById("configModal");
-    const configCancel = document.getElementById("configCancel");
-    const configSave = document.getElementById("configSave");
-    const configStatus = document.getElementById("configStatus");
-    const cfgUser = document.getElementById("cfgUser");
-    const cfgRepo = document.getElementById("cfgRepo");
-    const cfgToken = document.getElementById("cfgToken");
-
-    configToggle.addEventListener("click", () => {
-      const cfg = loadConfig();
-      if (cfg) {
-        cfgUser.value = cfg.user || "";
-        cfgRepo.value = cfg.repo || "";
-        cfgToken.value = cfg.token || "";
-      } else {
-        cfgUser.value = "";
-        cfgRepo.value = "";
-        cfgToken.value = "";
-      }
-      configStatus.textContent = "";
-      configModal.classList.add("active");
-    });
-
-    configCancel.addEventListener("click", () => {
-      configModal.classList.remove("active");
-    });
-
-    configSave.addEventListener("click", async () => {
-      const user = cfgUser.value.trim();
-      const repo = cfgRepo.value.trim();
-      const token = cfgToken.value.trim();
-
-      if (!user || !repo || !token) {
-        configStatus.textContent = "Tous les champs sont requis.";
-        return;
-      }
-
-      const cfg = { user, repo, token };
-      saveConfig(cfg);
-
-      configStatus.textContent = "Configuration enregistrée. Synchronisation activée.";
-      setTimeout(() => {
-        configModal.classList.remove("active");
-        render();
-      }, 800);
-    });
-
-    // Initial render
-    render();
-  </script>
-</body>
-</html>
