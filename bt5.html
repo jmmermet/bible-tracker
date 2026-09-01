@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bible – Test Reset</title>
+  <title>Suivi de lecture de la Bible</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -216,6 +216,47 @@
       cursor: pointer;
       font-family: inherit;
     }
+
+    /* Modal reset (2 étapes) */
+    .reset-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .reset-modal.active {
+      display: flex;
+    }
+    .reset-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      max-width: 340px;
+      width: 90%;
+    }
+    .reset-card h2 {
+      font-size: 0.95rem;
+      margin: 0 0 0.4rem;
+    }
+    .reset-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0 0 0.6rem;
+    }
+    .reset-actions {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+    .reset-actions button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
   </style>
 </head>
 <body>
@@ -245,6 +286,22 @@
   <!-- Bouton Réinitialiser -->
   <div class="reset-section">
     <button class="reset-button" id="resetBtn">Réinitialiser</button>
+  </div>
+
+  <!-- Modal reset (2 étapes) -->
+  <div class="reset-modal" id="resetModal">
+    <div class="reset-card">
+      <h2 id="resetTitle">Réinitialiser la progression ?</h2>
+      <p id="resetText">Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.</p>
+      <div class="reset-actions" id="resetActions1">
+        <button class="secondary" id="resetCancel1">Annuler</button>
+        <button id="resetNext1">Continuer</button>
+      </div>
+      <div class="reset-actions" id="resetActions2" style="display:none;">
+        <button class="secondary" id="resetCancel2">Retour</button>
+        <button id="resetConfirm2">Réinitialiser la progression</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -327,7 +384,7 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_testreset_v1";
+    const STORAGE_KEY = "bibleProgress_finale_v2";
 
     function loadProgress() {
       try {
@@ -467,14 +524,48 @@
       }
     });
 
-    // Bouton Réinitialiser (simple, sans modale pour ce test)
+    // Reset modal (2 étapes)
     const resetBtn = document.getElementById("resetBtn");
+    const resetModal = document.getElementById("resetModal");
+    const resetTitle = document.getElementById("resetTitle");
+    const resetText = document.getElementById("resetText");
+    const resetActions1 = document.getElementById("resetActions1");
+    const resetActions2 = document.getElementById("resetActions2");
+    const resetCancel1 = document.getElementById("resetCancel1");
+    const resetNext1 = document.getElementById("resetNext1");
+    const resetCancel2 = document.getElementById("resetCancel2");
+    const resetConfirm2 = document.getElementById("resetConfirm2");
 
     resetBtn.addEventListener("click", () => {
-      if (confirm("Voulez‑vous vraiment réinitialiser toute la progression ?")) {
-        localStorage.removeItem(STORAGE_KEY);
-        render();
-      }
+      resetTitle.textContent = "Réinitialiser la progression ?";
+      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
+      resetActions1.style.display = "flex";
+      resetActions2.style.display = "none";
+      resetModal.classList.add("active");
+    });
+
+    resetCancel1.addEventListener("click", () => {
+      resetModal.classList.remove("active");
+    });
+
+    resetNext1.addEventListener("click", () => {
+      resetTitle.textContent = "Êtes‑vous sûr ?";
+      resetText.textContent = "Toute ta progression sera effacée. Es‑tu certain de vouloir continuer ?";
+      resetActions1.style.display = "none";
+      resetActions2.style.display = "flex";
+    });
+
+    resetCancel2.addEventListener("click", () => {
+      resetTitle.textContent = "Réinitialiser la progression ?";
+      resetText.textContent = "Toutes les cases seront décochées. Cette action est réversible uniquement en cochant à nouveau les chapitres.";
+      resetActions1.style.display = "flex";
+      resetActions2.style.display = "none";
+    });
+
+    resetConfirm2.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      resetModal.classList.remove("active");
+      render();
     });
 
     // Initial render
