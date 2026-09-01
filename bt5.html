@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bible – Étape 1 bis</title>
+  <title>Bible – Étape 2 (Livres + overlay)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -14,6 +14,7 @@
       --accent-weak: #dbeafe;
       --border: #e5e7eb;
       --success: #16a34a;
+      --overlay-bg: rgba(0,0,0,0.6);
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -80,23 +81,96 @@
       min-width: 45px;
       text-align: right;
     }
+    .actions {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
 
-    /* On garde la structure simple de bible-tous-simple */
+    /* Overlay "Livres" pleine largeur */
+    .books-overlay {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--overlay-bg);
+      z-index: 40;
+      display: none;
+      padding: 0.5rem;
+      overflow-y: auto;
+    }
+    .books-overlay.active {
+      display: block;
+    }
+    .books-panel {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 0.6rem;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .books-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0.6rem 0.4rem 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(2.8rem, 1fr));
+      gap: 0.4rem;
+    }
+    .book-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.4rem 0.2rem;
+      font-size: 0.75rem;
+      user-select: none;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--text);
+      text-align: center;
+      font-family: inherit;
+    }
+    .book-btn:hover {
+      background: var(--accent-weak);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     .container {
       padding: 1rem;
       max-width: 900px;
       margin: 0 auto;
     }
     h2 {
-      font-size: 1rem;
-      margin: 1rem 0 0.5rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0.9rem 0 0.35rem;
     }
     .book {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.6rem;
-      margin-bottom: 0.8rem;
+      padding: 0.55rem;
+      margin-bottom: 0.65rem;
+      scroll-margin-top: 60px;
     }
     .book-title {
       font-weight: 600;
@@ -105,7 +179,7 @@
     .chapters {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-      gap: 0.3rem;
+      gap: 0.25rem;
     }
     .chapter {
       border: 1px solid var(--border);
@@ -128,14 +202,25 @@
 </head>
 <body>
   <header>
-    <h1>Suivi de lecture de la Bible</h1>
+    <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+      <button id="menuToggle">Livres</button>
+      <h1>Suivi de lecture de la Bible</h1>
+    </div>
     <div class="progress-wrap">
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
       <div class="progress-text" id="progressText">0%</div>
     </div>
+    <div class="actions"></div>
   </header>
+
+  <!-- Overlay "Livres" -->
+  <div class="books-overlay" id="booksOverlay">
+    <div class="books-panel">
+      <div id="booksPanelContent"></div>
+    </div>
+  </div>
 
   <div class="container" id="app"></div>
 
@@ -219,7 +304,7 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_etape1bis_v1";
+    const STORAGE_KEY = "bibleProgress_etape2_v1";
 
     function loadProgress() {
       try {
@@ -241,14 +326,53 @@
       return `${bookName}:${chapterNumber}`;
     }
 
+    function slugify(str) {
+      return str
+        .toLowerCase()
+        .replace(/[^a-z0-9à-ÿ]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+
     function render() {
       const progress = loadProgress();
       const app = document.getElementById("app");
+      const booksPanelContent = document.getElementById("booksPanelContent");
+
       app.innerHTML = "";
+      booksPanelContent.innerHTML = "";
 
       let totalChapters = 0;
       let checkedChapters = 0;
 
+      // Overlay "Livres"
+      for (const section of bible) {
+        const sectionTitle = document.createElement("div");
+        sectionTitle.className = "books-section-title";
+        sectionTitle.textContent = section.section;
+        booksPanelContent.appendChild(sectionTitle);
+
+        const booksGrid = document.createElement("div");
+        booksGrid.className = "books-grid";
+
+        for (const book of section.books) {
+          const btn = document.createElement("button");
+          btn.className = "book-btn";
+          btn.textContent = book.abbr;
+          btn.title = book.name;
+          btn.addEventListener("click", () => {
+            document.getElementById("booksOverlay").classList.remove("active");
+            const el = document.getElementById(`book-${slugify(book.name)}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+          booksGrid.appendChild(btn);
+        }
+
+        booksPanelContent.appendChild(booksGrid);
+      }
+
+      // Livres + chapitres
       for (const section of bible) {
         const sectionTitle = document.createElement("h2");
         sectionTitle.textContent = section.section;
@@ -257,6 +381,7 @@
         for (const book of section.books) {
           const bookDiv = document.createElement("div");
           bookDiv.className = "book";
+          bookDiv.id = `book-${slugify(book.name)}`;
 
           const title = document.createElement("div");
           title.className = "book-title";
@@ -304,6 +429,21 @@
       document.getElementById("progressText").textContent = percent + "%";
     }
 
+    // Overlay "Livres"
+    const menuToggle = document.getElementById("menuToggle");
+    const booksOverlay = document.getElementById("booksOverlay");
+
+    menuToggle.addEventListener("click", () => {
+      booksOverlay.classList.add("active");
+    });
+
+    booksOverlay.addEventListener("click", (e) => {
+      if (e.target === booksOverlay) {
+        booksOverlay.classList.remove("active");
+      }
+    });
+
+    // Initial render
     render();
   </script>
 </body>
