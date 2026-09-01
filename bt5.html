@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Suivi de lecture de la Bible – Test compact 2</title>
+  <title>Suivi de lecture de la Bible</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -179,6 +179,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.35rem;
+      cursor: pointer;
+      user-select: none;
     }
     .book-title {
       font-weight: 600;
@@ -416,7 +418,10 @@
       }
     ];
 
-    const STORAGE_KEY = "bibleProgress_testcompact2_v1";
+    const STORAGE_KEY = "bibleProgress_finale_complete_v1";
+
+    // État "ouvert/fermé" des livres (non persisté, reset à chaque rechargement)
+    const bookOpenState = {};
 
     function loadProgress() {
       try {
@@ -492,9 +497,16 @@
         app.appendChild(sectionTitle);
 
         for (const book of section.books) {
+          const bookKey = slugify(book.name);
+
+          // Initialiser l'état ouvert/fermé si besoin
+          if (bookOpenState[bookKey] === undefined) {
+            bookOpenState[bookKey] = true; // ouvert par défaut
+          }
+
           const bookDiv = document.createElement("div");
           bookDiv.className = "book";
-          bookDiv.id = `book-${slugify(book.name)}`;
+          bookDiv.id = `book-${bookKey}`;
 
           // Calculer si le livre est complet
           let bookChecked = 0;
@@ -504,13 +516,20 @@
           }
           const isComplete = bookChecked === book.chapters;
 
-          // Si le livre est complet, on applique la classe compact
-          if (isComplete) {
+          // Si le livre est complet et fermé, on applique la classe compact
+          if (isComplete && !bookOpenState[bookKey]) {
             bookDiv.classList.add("compact");
           }
 
           const header = document.createElement("div");
           header.className = "book-header";
+          header.addEventListener("click", () => {
+            // Basculer ouvert/fermé seulement si le livre est complet
+            if (isComplete) {
+              bookOpenState[bookKey] = !bookOpenState[bookKey];
+              render();
+            }
+          });
 
           const title = document.createElement("div");
           title.className = "book-title";
@@ -644,7 +663,14 @@
     });
 
     resetConfirm3.addEventListener("click", () => {
+      // Effacer la progression
       localStorage.removeItem(STORAGE_KEY);
+
+      // Réouvrir toutes les boîtes
+      for (const key of Object.keys(bookOpenState)) {
+        bookOpenState[key] = true;
+      }
+
       resetModal.classList.remove("active");
       render();
     });
